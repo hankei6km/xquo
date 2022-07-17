@@ -32,6 +32,6 @@ jobs:
           push: never
           subFolder: .devcontainer/cli
           runCmd: |
-            cargo test --target=x86_64-unknown-linux-musl
-            cargo test --target=x86_64-unknown-linux-musl --release
-            cargo test --target=x86_64-unknown-linux-musl --release --features=jemalloc
+            cargo test --quiet --target=x86_64-unknown-linux-musl
+            cargo test --quiet --target=x86_64-unknown-linux-musl --release
+            cargo test --quiet --target=x86_64-unknown-linux-musl --release --features=jemalloc
