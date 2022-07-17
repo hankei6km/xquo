@@ -27,6 +27,7 @@ jobs:
       - name: Run tests inside Dev Container
         uses: devcontainers/ci@v0.2
         with:
+          imageName: ghcr.io/hankei6km/h6-dev-containers:2022-07-15-main-cli_rust
           subFolder: .devcontainer/cli
           runCmd: |
             cargo test --target=x86_64-unknown-linux-musl
