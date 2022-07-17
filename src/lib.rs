@@ -10,7 +10,7 @@ pub mod cli {
     use std::sync::mpsc;
     use std::thread;
 
-    use crate::bulk::bulk::BulkReader;
+    use crate::bulk::BulkReader;
     use crate::quote::DoQuote;
     use crate::quote::QuoteBasic;
     use crate::quote::QuotePrintable;
@@ -36,7 +36,7 @@ pub mod cli {
         input_from_tty: bool,
     }
 
-    const EXMAPLES_MESSAGE: &'static str = "
+    const EXMAPLES_MESSAGE: &str = "
 xquo reads lines from standard input.
 
 EXAMPLES:
@@ -65,10 +65,10 @@ For more information try --help
             reader: impl std::io::Read,
             writer: std::io::Stdout,
         ) -> Result<(), Box<dyn std::error::Error>> {
-            if self.input_from_tty == false && atty::is(Stream::Stdin) {
+            if !self.input_from_tty && atty::is(Stream::Stdin) {
                 let mut buf_writer = BufWriter::new(writer);
                 buf_writer
-                    .write(format!("{}", EXMAPLES_MESSAGE).as_bytes())
+                    .write_all(EXMAPLES_MESSAGE.to_string().as_bytes())
                     .unwrap();
                 return Ok(());
             }
@@ -95,7 +95,7 @@ For more information try --help
                         let mut s = Vec::<String>::new();
                         for buf in bulked {
                             let mut line = std::str::from_utf8(&buf).unwrap().to_string();
-                            if line.ends_with("\0") {
+                            if line.ends_with('\0') {
                                 line.truncate(line.len() - 1)
                             }
                             s.push(q.quote(line));
@@ -103,7 +103,7 @@ For more information try --help
                         // TODO: error を受信する用の thread を作成.
                         in_tx
                             .send(s.join(&out_delimiter) + &out_delimiter)
-                            .with_context(|| format!("could not send lines to printer thread"))
+                            .with_context(|| "could not send lines to printer thread".to_string())
                             .unwrap_or_else(|err| {
                                 eprintln!("{}", err);
                                 std::process::exit(1);
@@ -120,18 +120,15 @@ For more information try --help
                 for line in in_rx {
                     // TODO: error を受信する用の thread を作成.
                     buf_writer
-                        .write(line.as_bytes())
+                        .write_all(line.as_bytes())
                         //.with_context(|| format!("could not print lines"))
                         .unwrap_or_else(|err| {
-                            match err.raw_os_error() {
-                                Some(x) => {
-                                    // println!("{}", x);
-                                    if x != 32 {
-                                        eprintln!("{}", err);
-                                    }
-                                    std::process::exit(1);
+                            if let Some(x) = err.raw_os_error() {
+                                // println!("{}", x);
+                                if x != 32 {
+                                    eprintln!("{}", err);
                                 }
-                                _ => {}
+                                std::process::exit(1);
                             }
                             eprintln!("{}", err);
                             std::process::exit(1);
@@ -152,7 +149,7 @@ For more information try --help
                 // TODO: error を受信する用の thread を作成.
                 out_tx
                     .send(bulk)
-                    .with_context(|| format!("could not send lines to quote thread"))
+                    .with_context(|| "could not send lines to quote thread".to_string())
                     .unwrap_or_else(|err| {
                         eprintln!("{}", err);
                         std::process::exit(1);

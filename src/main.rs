@@ -43,7 +43,7 @@ fn bulk_range(s: &str) -> Result<usize, String> {
     }
 }
 
-const COMMAND_USAGE: &'static str = "xquo [OPTIONS] < /path/to/file";
+const COMMAND_USAGE: &str = "xquo [OPTIONS] < /path/to/file";
 
 /// Quote null splited lines for Bash command line
 #[derive(Parser)]

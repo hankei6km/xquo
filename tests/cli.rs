@@ -104,7 +104,7 @@ fn use_large_data_that_is_shuffle_lines_in_parallel_mode() -> Result<(), Box<dyn
     let a = cmd.assert();
     let mut out_lines: Vec<String> = from_utf8(&a.get_output().stdout)
         .unwrap()
-        .split("\n")
+        .split('\n')
         .map(|v| v.to_string())
         .collect();
     out_lines.sort();
