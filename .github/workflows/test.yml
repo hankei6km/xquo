@@ -1,0 +1,34 @@
+name: test
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "!v*"
+jobs:
+  jest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # https://github.com/actions/cache/blob/main/examples.md#rust---cargo
+      - name: Cache artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run tests inside Dev Container
+        uses: devcontainers/ci@v0.2
+        with:
+          subFolder: .devcontainer/cli
+          runCmd: |
+            cargo test --target=x86_64-unknown-linux-musl
+            cargo test --target=x86_64-unknown-linux-musl --release
+            cargo test --target=x86_64-unknown-linux-musl --release --features=jemalloc
