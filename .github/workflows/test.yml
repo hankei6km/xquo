@@ -32,6 +32,9 @@ jobs:
           push: never
           subFolder: .devcontainer/cli
           runCmd: |
+            echo "=== test debug build"
             cargo test --quiet --target=x86_64-unknown-linux-musl
+            echo "=== test release build"
             cargo test --quiet --target=x86_64-unknown-linux-musl --release
+            echo "=== test release build with jemalloc feature"
             cargo test --quiet --target=x86_64-unknown-linux-musl --release --features=jemalloc
