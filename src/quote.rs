@@ -5,7 +5,7 @@ struct QuoteRplacePair {
 
 pub trait DoQuote {
     fn wrap_single_quote(&self, line: String) -> String {
-        line.replace("'", "'\"'\"'")
+        line.replace('\'', "'\"'\"'")
     }
 
     fn replace(&self, line: String) -> String;
@@ -28,7 +28,7 @@ pub struct QuotePrintable {}
 impl DoQuote for QuotePrintable {
     fn replace(&self, line: String) -> String {
         // スタックに積まれないはず？
-        const TBL: &'static [QuoteRplacePair] = &[
+        const TBL: &[QuoteRplacePair] = &[
             QuoteRplacePair {
                 from: "\u{8}",
                 to: "'$'\\b''",
@@ -38,11 +38,11 @@ impl DoQuote for QuotePrintable {
                 to: "'$'\\n''",
             },
         ];
-        let mut ret: String = line.clone();
+        let mut ret: String = line;
         for pair in TBL {
             ret = ret.replace(pair.from, pair.to);
         }
-        return ret;
+        ret
     }
 }
 

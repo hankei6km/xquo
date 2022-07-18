@@ -1,45 +1,40 @@
-pub mod bulk {
-    use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader};
 
-    pub struct BulkReader<T> {
-        reader: BufReader<T>,
-        size: usize,
+pub struct BulkReader<T> {
+    reader: BufReader<T>,
+    size: usize,
+}
+
+impl<T> BulkReader<T>
+where
+    T: std::io::Read,
+{
+    //fn new(reader: BufReader<Box<dyn std::io::Read>>) -> BlkRead {
+    pub fn new(reader: T, size: usize) -> BulkReader<T> {
+        let r = BufReader::<T>::new(reader);
+        BulkReader { reader: r, size }
     }
-
-    impl<T> BulkReader<T>
-    where
-        T: std::io::Read,
-    {
-        //fn new(reader: BufReader<Box<dyn std::io::Read>>) -> BlkRead {
-        pub fn new(reader: T, size: usize) -> BulkReader<T> {
-            let r = BufReader::<T>::new(reader);
-            BulkReader {
-                reader: r,
-                size: size,
+    pub fn read(&mut self, byte: u8) -> (Vec<Vec<u8>>, usize) {
+        let mut bulk = Vec::<Vec<u8>>::new();
+        let mut line_cnt = 0usize;
+        loop {
+            let mut buf = Vec::<u8>::new();
+            if self.reader.read_until(byte, &mut buf).unwrap() == 0 {
+                break;
+            }
+            bulk.push(buf); // push はどれくらいコストがかかる?
+            line_cnt += 1;
+            if line_cnt >= self.size {
+                break;
             }
         }
-        pub fn read(&mut self, byte: u8) -> (Vec<Vec<u8>>, usize) {
-            let mut bulk = Vec::<Vec<u8>>::new();
-            let mut line_cnt = 0usize;
-            loop {
-                let mut buf = Vec::<u8>::new();
-                if self.reader.read_until(byte, &mut buf).unwrap() == 0 {
-                    break;
-                }
-                bulk.push(buf); // push はどれくらいコストがかかる?
-                line_cnt += 1;
-                if line_cnt >= self.size {
-                    break;
-                }
-            }
-            (bulk, line_cnt)
-        }
+        (bulk, line_cnt)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::bulk::BulkReader;
+    use crate::bulk::BulkReader;
 
     fn lines_to_bulk(src: &[&str], trim: bool) -> Vec<Vec<u8>> {
         let mut ret = Vec::<Vec<u8>>::new();
@@ -50,16 +45,16 @@ mod tests {
             ret.push(src[0].as_bytes().to_vec());
             return ret;
         } else if trim {
-            for v in src[0..len - 1].to_vec() {
+            src[0..len - 1].iter().for_each(|v| {
                 ret.push(format!("{}\0", v).as_bytes().to_vec());
-            }
+            });
             ret.push(src[len - 1].as_bytes().to_vec());
             return ret;
         }
         for v in src {
             ret.push(format!("{}\0", v).as_bytes().to_vec());
         }
-        return ret;
+        ret
     }
 
     #[test]
