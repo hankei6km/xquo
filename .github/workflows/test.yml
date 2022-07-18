@@ -32,6 +32,8 @@ jobs:
           push: never
           subFolder: .devcontainer/cli
           runCmd: |
+            echo "=== run clippy"
+            cargo clippy -- -Dwarnings --target=x86_64-unknown-linux-musl
             echo "=== test debug build"
             cargo test --quiet --target=x86_64-unknown-linux-musl
             echo "=== test release build"
