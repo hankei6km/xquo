@@ -33,7 +33,7 @@ jobs:
           subFolder: .devcontainer/cli
           runCmd: |
             echo "=== run clippy"
-            cargo clippy  --all-features -- -Dwarnings --target=x86_64-unknown-linux-musl
+            cargo clippy --quiet --all-features -- -Dwarnings --target=x86_64-unknown-linux-musl
             echo "=== test debug build"
             cargo test --quiet --target=x86_64-unknown-linux-musl
             echo "=== test release build"
