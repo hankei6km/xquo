@@ -12,17 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # https://github.com/actions/cache/blob/main/examples.md#rust---cargo
-      - name: Cache artifacts
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
 
       - name: Run tests inside Dev Container
         uses: devcontainers/ci@v0.2
