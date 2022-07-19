@@ -5,6 +5,7 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+authors = ["hankei6km <hankei6km@gmail.com>"]
 license = "MIT"
 description = "Quote null splited lines for Bash command line"
 repository = "https://github.com/hankei6km/xquo"
