@@ -1,0 +1,82 @@
+name: release
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  release:
+    # if: ${{ github.event.release.prerelease ==  false }}
+    runs-on: ubuntu-latest
+    environment: crate
+    strategy:
+      matrix:
+        variant:
+          - name: xquo
+            binname: xquo
+            version: ${{ github.event.release.name }}
+            target: x86_64-unknown-linux-musl
+            features: jemalloc
+          - name: xquo
+            binname: xquo.exe
+            version: ${{ github.event.release.name }}
+            target: x86_64-pc-windows-gnu
+            features: ""
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      # https://github.com/actions/cache/blob/main/examples.md#rust---cargo
+      - name: Cache artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-${{ matrix.variant.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build inside Dev Container
+        uses: devcontainers/ci@v0.2
+        with:
+          imageName: ghcr.io/hankei6km/h6-dev-containers
+          imageTag: 2022-07-20-main-cli_rust
+          push: never
+          subFolder: .devcontainer/cli
+          runCmd: |
+            bash /workspaces/xquo/scripts/release.sh
+          env: |
+            NAME
+            BINNAME
+            VERSION
+            TARGET
+            FEATURES
+        env:
+          NAME: ${{ matrix.variant.name }}
+          BINNAME: ${{ matrix.variant.binname }}
+          VERSION: ${{ matrix.variant.version }}
+          TARGET: ${{ matrix.variant.target }}
+          FEATURES: ${{ matrix.variant.features }}
+
+      - name: Upload archive file to release Asset
+        id: upload-archive-release-asset
+        uses: shogo82148/actions-upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: tmp/rel/*.gz
+
+      # 同じものを何度もアップロードすることになる。
+      - name: Upload lincece text file to release Asset
+        id: upload-text-release-asset
+        uses: shogo82148/actions-upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: tmp/rel/*.txt
+          overwrite: true
