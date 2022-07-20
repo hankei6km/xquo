@@ -8,7 +8,6 @@ jobs:
   release:
     # if: ${{ github.event.release.prerelease ==  false }}
     runs-on: ubuntu-latest
-    environment: crate
     strategy:
       matrix:
         variant:
@@ -80,3 +79,38 @@ jobs:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: tmp/rel/*.txt
           overwrite: true
+
+  publish:
+    if: ${{ github.event.release.prerelease ==  false }}
+    runs-on: ubuntu-latest
+    environment: publish
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      # https://github.com/actions/cache/blob/main/examples.md#rust---cargo
+      - name: Cache artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-publish-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Publish
+        uses: devcontainers/ci@v0.2
+        with:
+          imageName: ghcr.io/hankei6km/h6-dev-containers
+          imageTag: 2022-07-20-main-cli_rust
+          push: never
+          subFolder: .devcontainer/cli
+          runCmd: |
+            cargo publish
+          env: |
+            CARGO_REGISTRY_TOKEN
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
