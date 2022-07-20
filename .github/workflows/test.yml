@@ -73,7 +73,7 @@ jobs:
 
       - name: Install and test
         run: |
-          cargo install --path .
+          cargo install --force --path .
           test "$(echo test | xquo)" = "${EXPECT}"
         shell: bash
         env:
