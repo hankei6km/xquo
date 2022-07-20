@@ -12,7 +12,13 @@ repository = "https://github.com/hankei6km/xquo"
 readme = "README.md"
 categories = ["command-line-utilities"]
 keywords = ["cli", "bash", "text", "utility"]
-exclude = ["/.devcontainer/", "/.gitignore", "/.github/", "/.vscode/"]
+exclude = [
+    "/.devcontainer/",
+    "/.gitignore",
+    "/.github/",
+    "/.vscode/",
+    "/scripts/",
+]
 
 [features]
 default = []
