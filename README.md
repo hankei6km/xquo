@@ -4,13 +4,13 @@ Command line utility to quote null splited lines for Bash command line.
 
 ## Installation
 
-Using `cargo`:
+### Using `cargo`
 
 ```console
 $ cargo install xquo
 ```
 
-Using `cargo` with `jemalloc` feature:
+### Using `cargo` with `jemalloc` feature
 
 As far as I tried, it could be built in Ubuntu(`x86_64-unknown-linux-musl`) and Apine(`x86_64-unknown-linux-gnu`).
 
@@ -18,7 +18,7 @@ As far as I tried, it could be built in Ubuntu(`x86_64-unknown-linux-musl`) and 
 $ cargo install xquo --features jemalloc
 ```
 
-From repository relases page:
+### From repository relases page
 
 https://github.com/hankei6km/xquo/releases
 
