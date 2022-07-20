@@ -53,7 +53,8 @@ jobs:
           - runner: ubuntu-latest
             expect: "'test'$'\\n'''"
           - runner: windows-latest
-            expect: "'test'$'\\r'''$'\\n'''"
+            # expect: "'test'$'\\r'''$'\\n'''"
+            expect: "'test'$'\\n'''"
 
     steps:
       - uses: actions/checkout@v3
