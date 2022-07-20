@@ -6,7 +6,7 @@ on:
     tags:
       - "!v*"
 jobs:
-  test:
+  cargo:
     runs-on: ubuntu-latest
     strategy:
       matrix:

@@ -39,12 +39,25 @@ fn wrap_sngle_quote_char() -> Result<(), Box<dyn std::error::Error>> {
 #[test]
 fn joined_by_null() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("xquo")?;
-    let lines = ["test", "test\ntest", "テスト🦀\n", "テスト\u{8}テスト"];
+    let lines = [
+        "test",
+        "test\ntest",
+        "test\rtest",
+        "test\r\ntest",
+        "テスト🦀\n",
+        "テスト🦀\r",
+        "テスト🦀\r\n",
+        "テスト\u{8}テスト",
+    ];
     let input_lines = lines.join("\0");
     let ex_lines = [
         "test",
         "test'$'\\n''test",
+        "test'$'\\r''test",
+        "test'$'\\r'''$'\\n''test",
         "テスト🦀'$'\\n''",
+        "テスト🦀'$'\\r''",
+        "テスト🦀'$'\\r'''$'\\n''",
         "テスト'$'\\b''テスト",
     ];
     let ex = ex_lines.map(|v| format!("'{}'", v)).join("\0") + "\0";
@@ -57,9 +70,27 @@ fn joined_by_null() -> Result<(), Box<dyn std::error::Error>> {
 #[test]
 fn disable_escape_chars() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("xquo")?;
-    let lines = ["test", "test\ntest", "テスト🦀\n", "テスト\u{8}テスト"];
+    let lines = [
+        "test",
+        "test\ntest",
+        "test\rtest",
+        "test\r\ntest",
+        "テスト🦀\n",
+        "テスト🦀\r",
+        "テスト🦀\r\n",
+        "テスト\u{8}テスト",
+    ];
     let input_lines = lines.join("\0");
-    let ex_lines = ["test", "test\ntest", "テスト🦀\n", "テスト\u{8}テスト"];
+    let ex_lines = [
+        "test",
+        "test\ntest",
+        "test\rtest",
+        "test\r\ntest",
+        "テスト🦀\n",
+        "テスト🦀\r",
+        "テスト🦀\r\n",
+        "テスト\u{8}テスト",
+    ];
     let ex = ex_lines.map(|v| format!("'{}'", v)).join("\n") + "\n";
 
     cmd.write_stdin(input_lines).args(&["-n"]);
@@ -70,9 +101,25 @@ fn disable_escape_chars() -> Result<(), Box<dyn std::error::Error>> {
 #[test]
 fn disable_escape_chars_and_joined_by_null() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("xquo")?;
-    let lines = ["test", "test\ntest", "テスト🦀\n", "テスト\u{8}テスト"];
+    let lines = [
+        "test",
+        "test\ntest",
+        "test\rtest",
+        "test\r\ntest",
+        "テスト🦀\n",
+        "テスト🦀\r",
+        "テスト🦀\r\n",
+        "テスト\u{8}テスト",
+    ];
     let input_lines = lines.join("\0");
-    let ex_lines = ["test", "test\ntest", "テスト🦀\n", "テスト\u{8}テスト"];
+    let ex_lines = [        "test",
+        "test\ntest",
+        "test\rtest",
+        "test\r\ntest",
+        "テスト🦀\n",
+        "テスト🦀\r",
+        "テスト🦀\r\n",
+        "テスト\u{8}テスト",];
     let ex = ex_lines.map(|v| format!("'{}'", v)).join("\0") + "\0";
 
     cmd.write_stdin(input_lines).args(&["-n", "-o", "null"]);
