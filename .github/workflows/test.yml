@@ -8,6 +8,17 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        check:
+          - id: clippy
+            subcmd: clippy --quiet --all-features -- -Dwarnings --target=x86_64-unknown-linux-musl
+          - id: test_debug
+            subcmd: test --quiet --target=x86_64-unknown-linux-musl
+          - id: test_release
+            subcmd: test --quiet --target=x86_64-unknown-linux-musl --release
+          - id: test_release_jemalloc
+            subcmd: test --quiet --target=x86_64-unknown-linux-musl --release --features=jemalloc
 
     steps:
       - uses: actions/checkout@v3
@@ -22,7 +33,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-$${{  matrix.check.id }}-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Run tests inside Dev Container
         uses: devcontainers/ci@v0.2
@@ -32,11 +43,4 @@ jobs:
           push: never
           subFolder: .devcontainer/cli
           runCmd: |
-            echo "=== run clippy"
-            cargo clippy --quiet --all-features -- -Dwarnings --target=x86_64-unknown-linux-musl
-            echo "=== test debug build"
-            cargo test --quiet --target=x86_64-unknown-linux-musl
-            echo "=== test release build"
-            cargo test --quiet --target=x86_64-unknown-linux-musl --release
-            echo "=== test release build with jemalloc feature"
-            cargo test --quiet --target=x86_64-unknown-linux-musl --release --features=jemalloc
+            cargo ${{ matrix.check.subcmd }}
