@@ -44,3 +44,37 @@ jobs:
           subFolder: .devcontainer/cli
           runCmd: |
             cargo ${{ matrix.check.subcmd }}
+
+  install:
+    runs-on: ${{ matrix.variant.runner }}
+    strategy:
+      matrix:
+        variant:
+          - runner: ubuntu-latest
+            expect: "'test'$'\\n'''"
+          - runner: windows-latest
+            # expect: "'test'$'\\r'''$'\\n'''"
+            expect: "'test'$'\\n'''"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # https://github.com/actions/cache/blob/main/examples.md#rust---cargo
+      - name: Cache artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-install-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install and test
+        run: |
+          cargo install --force --path .
+          test "$(echo test | xquo)" = "${EXPECT}"
+        shell: bash
+        env:
+          EXPECT: ${{ matrix.variant.expect }}
