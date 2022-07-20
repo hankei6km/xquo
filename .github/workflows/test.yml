@@ -28,7 +28,7 @@ jobs:
         uses: devcontainers/ci@v0.2
         with:
           imageName: ghcr.io/hankei6km/h6-dev-containers
-          imageTag: 2022-07-19-main-cli_rust
+          imageTag: 2022-07-20-main-cli_rust
           push: never
           subFolder: .devcontainer/cli
           runCmd: |
