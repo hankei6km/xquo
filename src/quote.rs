@@ -37,6 +37,10 @@ impl DoQuote for QuotePrintable {
                 from: "\n",
                 to: "'$'\\n''",
             },
+            QuoteRplacePair {
+                from: "\r",
+                to: "'$'\\r''",
+            },
         ];
         let mut ret: String = line;
         for pair in TBL {
@@ -97,5 +101,17 @@ mod tests {
 
         let quoted = qb.quote("test test\n".to_string());
         assert_eq!(quoted, "'test test'$'\\n'''");
+
+        let quoted = qb.quote("test\rtest".to_string());
+        assert_eq!(quoted, "'test'$'\\r''test'");
+
+        let quoted = qb.quote("test test\r".to_string());
+        assert_eq!(quoted, "'test test'$'\\r'''");
+
+        let quoted = qb.quote("test\r\ntest".to_string());
+        assert_eq!(quoted, "'test'$'\\r'''$'\\n''test'");
+
+        let quoted = qb.quote("test test\r\n".to_string());
+        assert_eq!(quoted, "'test test'$'\\r'''$'\\n'''");
     }
 }
