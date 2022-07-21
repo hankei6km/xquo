@@ -1,6 +1,6 @@
 {
   "name": "rust",
-  "image": "ghcr.io/hankei6km/h6-dev-containers:2022-07-19-main-rust",
+  "image": "ghcr.io/hankei6km/h6-dev-containers:2022-07-20-main-rust",
   "runArgs": ["--init", "--privileged"],
   "overrideCommand": false,
 
