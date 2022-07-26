@@ -57,7 +57,7 @@ struct Cli {
     #[clap(short, long, arg_enum, default_value = "lf")]
     out_delimiter: OutDelimiter,
 
-    /// The number of workers. If 2 or more is specified, the order of output lines is not preserved.
+    /// The number of workers.
     #[clap(short, long, default_value = "1", parse(try_from_str=workers_range))]
     workers: u8,
 

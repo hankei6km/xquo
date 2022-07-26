@@ -4,7 +4,7 @@ mod quote;
 pub mod cli {
     use anyhow::{Context, Result};
     use atty::Stream;
-    use crossbeam_channel::unbounded;
+    use crossbeam_channel::{bounded, Receiver, Sender};
     use std::io::prelude::*;
     use std::io::BufWriter;
     use std::sync::mpsc;
@@ -14,6 +14,13 @@ pub mod cli {
     use crate::quote::DoQuote;
     use crate::quote::QuoteBasic;
     use crate::quote::QuotePrintable;
+    struct ChanChanTx<T, U> {
+        payload: T,
+        tx: Sender<U>,
+    }
+    struct ChanChanRx<U> {
+        rx: Receiver<U>,
+    }
 
     pub enum XQuoOutDelimiter {
         Null,
@@ -76,24 +83,23 @@ For more information try --help
 
             // let (out_tx, out_rx) = bounded::<String>(3);
             // let (in_tx, in_rx) = bounded::<String>(3);
-            let (out_tx, out_rx) = unbounded::<Vec<Vec<u8>>>();
-            let (in_tx, in_rx) = mpsc::channel::<String>();
+            let (out_tx, out_rx) = bounded::<ChanChanTx<Vec<Vec<u8>>, String>>(0);
+            let (in_tx, in_rx) = mpsc::sync_channel::<ChanChanRx<String>>(self.workers as usize);
 
             for _i in 0..self.workers {
                 let no_escape = self.no_escape;
                 let out_delimiter = self.out_delimiter.clone();
                 let out_rx = out_rx.clone();
-                let in_tx = in_tx.clone();
                 thread::spawn(move || {
                     let q = if !no_escape {
                         Box::new(QuotePrintable {}) as Box<dyn DoQuote>
                     } else {
                         Box::new(QuoteBasic {}) as Box<dyn DoQuote>
                     };
-                    for bulked in out_rx {
+                    for chan_chan in out_rx {
                         //let mut s = Vec::<String>::new();
                         let mut s = Vec::<String>::new();
-                        for buf in bulked {
+                        for buf in chan_chan.payload {
                             let mut line = std::str::from_utf8(&buf).unwrap().to_string();
                             if line.ends_with('\0') {
                                 line.truncate(line.len() - 1)
@@ -101,7 +107,8 @@ For more information try --help
                             s.push(q.quote(line));
                         }
                         // TODO: error を受信する用の thread を作成.
-                        in_tx
+                        chan_chan
+                            .tx
                             .send(s.join(&out_delimiter) + &out_delimiter)
                             .with_context(|| "could not send lines to printer thread".to_string())
                             .unwrap_or_else(|err| {
@@ -111,16 +118,13 @@ For more information try --help
                     }
                 });
             }
-            // clone の大本になった sender を drop しておく.
-            // これがないと in_rx の iterator が終了しない.
-            drop(in_tx);
 
             let t = thread::spawn(move || {
                 let mut buf_writer = BufWriter::new(writer);
                 for line in in_rx {
                     // TODO: error を受信する用の thread を作成.
                     buf_writer
-                        .write_all(line.as_bytes())
+                        .write_all(line.rx.recv().unwrap().as_bytes())
                         //.with_context(|| format!("could not print lines"))
                         .unwrap_or_else(|err| {
                             if let Some(x) = err.raw_os_error() {
@@ -147,8 +151,16 @@ For more information try --help
                     break;
                 }
                 // TODO: error を受信する用の thread を作成.
+                let (tx, rx) = bounded::<String>(0);
                 out_tx
-                    .send(bulk)
+                    .send(ChanChanTx { payload: bulk, tx })
+                    .with_context(|| "could not send lines to quote thread".to_string())
+                    .unwrap_or_else(|err| {
+                        eprintln!("{}", err);
+                        std::process::exit(1);
+                    });
+                in_tx
+                    .send(ChanChanRx { rx })
                     .with_context(|| "could not send lines to quote thread".to_string())
                     .unwrap_or_else(|err| {
                         eprintln!("{}", err);
@@ -156,6 +168,7 @@ For more information try --help
                     });
             }
             drop(out_tx);
+            drop(in_tx);
             t.join().unwrap();
 
             Ok(())
