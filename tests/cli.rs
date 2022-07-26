@@ -112,14 +112,16 @@ fn disable_escape_chars_and_joined_by_null() -> Result<(), Box<dyn std::error::E
         "テスト\u{8}テスト",
     ];
     let input_lines = lines.join("\0");
-    let ex_lines = [        "test",
+    let ex_lines = [
+        "test",
         "test\ntest",
         "test\rtest",
         "test\r\ntest",
         "テスト🦀\n",
         "テスト🦀\r",
         "テスト🦀\r\n",
-        "テスト\u{8}テスト",];
+        "テスト\u{8}テスト",
+    ];
     let ex = ex_lines.map(|v| format!("'{}'", v)).join("\0") + "\0";
 
     cmd.write_stdin(input_lines).args(&["-n", "-o", "null"]);
@@ -140,21 +142,18 @@ fn use_large_data_that_is_shuffle_lines_in_parallel_mode() -> Result<(), Box<dyn
     for v in lines {
         ex_lines.push(format!("'{}'", v));
     }
-    // let ex = ex_lines.join("\n") + "\n";
-    // ソートすると空行が先頭に移動されるので。
-    let ex = format!("\n{}", ex_lines.join("\n"));
+    let ex = ex_lines.join("\n") + "\n";
 
     cmd.write_stdin(input_lines).args(["-w", "2", "-b", "10"]);
 
     cmd.assert().success();
 
     let a = cmd.assert();
-    let mut out_lines: Vec<String> = from_utf8(&a.get_output().stdout)
+    let out_lines: Vec<String> = from_utf8(&a.get_output().stdout)
         .unwrap()
         .split('\n')
         .map(|v| v.to_string())
         .collect();
-    out_lines.sort();
 
     assert_eq!(ex, out_lines.join("\n"));
     Ok(())
