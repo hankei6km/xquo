@@ -1,5 +1,5 @@
 use anyhow::Result;
-use clap::{ArgEnum, Parser};
+use clap::{Parser, ValueEnum};
 use xquo::cli::{XQuo, XQuoArgs, XQuoOutDelimiter};
 
 #[cfg(feature = "jemalloc")]
@@ -9,7 +9,7 @@ use tikv_jemallocator::Jemalloc;
 #[global_allocator]
 static GLOBAL: Jemalloc = Jemalloc;
 
-#[derive(Debug, Clone, ArgEnum)]
+#[derive(Debug, Clone, ValueEnum)]
 pub enum OutDelimiter {
     Null,
     Lf,
@@ -47,22 +47,22 @@ const COMMAND_USAGE: &str = "xquo [OPTIONS] < /path/to/file";
 
 /// Quote null splited lines for Bash command line
 #[derive(Parser)]
-#[clap(version, usage = COMMAND_USAGE)]
+#[clap(version, override_usage = COMMAND_USAGE)]
 struct Cli {
     /// Disable to escape non-printable chars("\n", "\b")
     #[clap(short, long)]
     no_escape: bool,
 
     /// The delmiter char to split lines in output.
-    #[clap(short, long, arg_enum, default_value = "lf")]
+    #[clap(short, long, value_enum, default_value = "lf")]
     out_delimiter: OutDelimiter,
 
     /// The number of workers.
-    #[clap(short, long, default_value = "1", parse(try_from_str=workers_range))]
+    #[clap(short, long, default_value = "1", value_parser=workers_range)]
     workers: u8,
 
     /// The number of lines bundled in a single bulk.
-    #[clap(short, long, default_value = "100", parse(try_from_str=bulk_range))]
+    #[clap(short, long, default_value = "100", value_parser=bulk_range)]
     bulk_lines: usize,
 
     /// Input from tty.
