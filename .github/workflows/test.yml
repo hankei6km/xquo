@@ -39,11 +39,13 @@ jobs:
         uses: devcontainers/ci@v0.2
         with:
           imageName: ghcr.io/hankei6km/h6-dev-containers
-          imageTag: cli_rust
+          imageTag: 2022-07-20-main-cli_rust
           push: never
           subFolder: .devcontainer/cli
           runCmd: |
-            cargo ${{ matrix.check.subcmd }}
+            "cargo ${SUBCMD}"
+        env:
+          SUBCMD: ${{ matrix.check.subcmd }}
 
   install:
     runs-on: ${{ matrix.variant.runner }}
