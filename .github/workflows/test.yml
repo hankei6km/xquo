@@ -12,13 +12,13 @@ jobs:
       matrix:
         check:
           - id: clippy
-            subcmd: clippy --all-features -- -Dwarnings --target=x86_64-unknown-linux-musl
+            subcmd: clippy --quiet --all-features -- -Dwarnings --target=x86_64-unknown-linux-musl
           - id: test_debug
-            subcmd: test --target=x86_64-unknown-linux-musl
+            subcmd: test --quiet --target=x86_64-unknown-linux-musl
           - id: test_release
-            subcmd: test --target=x86_64-unknown-linux-musl --release
+            subcmd: test --quiet --target=x86_64-unknown-linux-musl --release
           - id: test_release_jemalloc
-            subcmd: test --target=x86_64-unknown-linux-musl --release --features=jemalloc
+            subcmd: test --quiet --target=x86_64-unknown-linux-musl --release --features=jemalloc
 
     steps:
       - uses: actions/checkout@v3
@@ -42,7 +42,8 @@ jobs:
           imageTag: 2022-07-20-main-cli_rust
           push: never
           subFolder: .devcontainer/cli
-          runCmd: cargo ${{ matrix.check.subcmd }}
+          runCmd: |
+            cargo ${{ matrix.check.subcmd }}
 
   install:
     runs-on: ${{ matrix.variant.runner }}
