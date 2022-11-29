@@ -42,7 +42,6 @@ jobs:
           imageTag: 2022-07-20-main-cli_rust
           push: never
           subFolder: .devcontainer/cli
-          skipContainerUserIdUpdate: true
           runCmd: |
             cargo ${{ matrix.check.subcmd }}
           #  CARGO_TARGET_DIR=/home/vscode/tmp cargo ${{ matrix.check.subcmd }}
