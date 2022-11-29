@@ -36,14 +36,13 @@ jobs:
           key: ${{ runner.os }}-cargo-${{  matrix.check.id }}-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Run tests inside Dev Container
-        uses: devcontainers/ci@v0.2.1900000215
+        uses: devcontainers/ci@v0.2
         with:
           imageName: ghcr.io/hankei6km/h6-dev-containers
           imageTag: 2022-07-20-main-cli_rust
           push: never
           subFolder: .devcontainer/cli
-          runCmd: |
-            cargo ${{ matrix.check.subcmd }}
+          runCmd: cargo ${{ matrix.check.subcmd }}
 
   install:
     runs-on: ${{ matrix.variant.runner }}
