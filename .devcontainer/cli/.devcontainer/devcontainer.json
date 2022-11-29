@@ -1,6 +1,6 @@
 {
   "name": "rust",
-  "image": "ghcr.io/hankei6km/h6-dev-containers:2022-07-20-main-cli_rust",
+  "image": "ghcr.io/hankei6km/h6-dev-containers:cli_rust",
   "runArgs": ["--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
