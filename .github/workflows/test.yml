@@ -43,7 +43,9 @@ jobs:
           push: never
           subFolder: .devcontainer/cli
           runCmd: |
-            id
+            "cargo ${SUBCMD}"
+        env:
+          - SUBCMD: ${{ matrix.check.subcmd }}
 
   install:
     runs-on: ${{ matrix.variant.runner }}
