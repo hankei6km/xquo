@@ -45,7 +45,7 @@ jobs:
           runCmd: |
             "cargo ${SUBCMD}"
         env:
-          - SUBCMD: ${{ matrix.check.subcmd }}
+          SUBCMD: ${{ matrix.check.subcmd }}
 
   install:
     runs-on: ${{ matrix.variant.runner }}
