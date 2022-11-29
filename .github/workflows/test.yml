@@ -35,11 +35,6 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{  matrix.check.id }}-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Who am I
-        run: |
-          id
-          whoami
-
       - name: Run tests inside Dev Container
         uses: devcontainers/ci@v0.2
         with:
@@ -48,7 +43,7 @@ jobs:
           push: never
           subFolder: .devcontainer/cli
           runCmd: |
-            cargo ${{ matrix.check.subcmd }}
+            CARGO_TARGET_DIR=/home/vscode/tmp cargo ${{ matrix.check.subcmd }}
 
   install:
     runs-on: ${{ matrix.variant.runner }}
