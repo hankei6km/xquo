@@ -40,6 +40,7 @@ jobs:
 
       - name: Run tests inside Dev Container
         run: |
+          id
           devcontainer up --config ".devcontainer/cli/.devcontainer/devcontainer.json" --workspace-folder "." 
           devcontainer exec --config ".devcontainer/cli/.devcontainer/devcontainer.json" --workspace-folder "."  cargo ${{ matrix.check.subcmd }}
 
