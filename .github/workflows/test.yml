@@ -43,8 +43,11 @@ jobs:
           id
           devcontainer up --config ".devcontainer/cli/.devcontainer/devcontainer.json" --workspace-folder "." 
           devcontainer exec --config ".devcontainer/cli/.devcontainer/devcontainer.json" --workspace-folder "."  id
-          devcontainer exec --config ".devcontainer/cli/.devcontainer/devcontainer.json" --workspace-folder "."  cat /etc/passwd
-          devcontainer exec --config ".devcontainer/cli/.devcontainer/devcontainer.json" --workspace-folder "."  cargo ${{ matrix.check.subcmd }}
+          # https://github.com/microsoft/vscode-remote-release/issues/2402
+          # これに引っかかっている？
+          devcontainer exec --config ".devcontainer/cli/.devcontainer/devcontainer.json" --workspace-folder "."  grep 123 /etc/group
+          #devcontainer exec --config ".devcontainer/cli/.devcontainer/devcontainer.json" --workspace-folder "."  cat /etc/passwd
+          #devcontainer exec --config ".devcontainer/cli/.devcontainer/devcontainer.json" --workspace-folder "."  cargo ${{ matrix.check.subcmd }}
 
       #- name: Run tests inside Dev Container
       #  uses: devcontainers/ci@v0.2
