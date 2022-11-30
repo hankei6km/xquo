@@ -35,16 +35,29 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{  matrix.check.id }}-${{ hashFiles('**/Cargo.lock') }}
 
+      - name: Install @devcontainers/cli
+        run: npm install -g @devcontainers/cli
+
       - name: Run tests inside Dev Container
-        uses: devcontainers/ci@v0.2
-        with:
-          imageName: ghcr.io/hankei6km/h6-dev-containers
-          imageTag: 2022-07-20-main-cli_rust
-          push: never
-          subFolder: .devcontainer/cli
-          runCmd: |
+        run: |
+          devcontainer up \
+            --config ".devcontainer/cli/.devcontainer/devcontainer.json" \
+            --workspace-folder "."  \
+          devcontainer exec \
+            --config ".devcontainer/cli/.devcontainer/devcontainer.json" \
+            --workspace-folder "."  \
             cargo ${{ matrix.check.subcmd }}
-          #  CARGO_TARGET_DIR=/home/vscode/tmp cargo ${{ matrix.check.subcmd }}
+
+      #- name: Run tests inside Dev Container
+      #  uses: devcontainers/ci@v0.2
+      #  with:
+      #    imageName: ghcr.io/hankei6km/h6-dev-containers
+      #    imageTag: 2022-07-20-main-cli_rust
+      #    push: never
+      #    subFolder: .devcontainer/cli
+      #    runCmd: |
+      #      cargo ${{ matrix.check.subcmd }}
+      #    #  CARGO_TARGET_DIR=/home/vscode/tmp cargo ${{ matrix.check.subcmd }}
 
   install:
     runs-on: ${{ matrix.variant.runner }}
