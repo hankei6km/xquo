@@ -39,7 +39,7 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.variant.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build inside Dev Container
-        uses: devcontainers/ci@v0.2
+        uses: devcontainers/ci@v0.3
         with:
           imageName: ghcr.io/hankei6km/h6-dev-containers
           imageTag: 2022-12-01-main-cli_rust
@@ -102,7 +102,7 @@ jobs:
           key: ${{ runner.os }}-publish-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Publish
-        uses: devcontainers/ci@v0.2
+        uses: devcontainers/ci@v0.3
         with:
           imageName: ghcr.io/hankei6km/h6-dev-containers
           imageTag: 2022-12-01-main-cli_rust
