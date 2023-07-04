@@ -3,8 +3,8 @@ mod quote;
 
 pub mod cli {
     use anyhow::{Context, Result};
-    use atty::Stream;
     use crossbeam_channel::{bounded, Receiver, Sender};
+    use is_terminal::IsTerminal;
     use std::io::prelude::*;
     use std::io::BufWriter;
     use std::sync::mpsc;
@@ -72,7 +72,7 @@ For more information try --help
             reader: impl std::io::Read,
             writer: std::io::Stdout,
         ) -> Result<(), Box<dyn std::error::Error>> {
-            if !self.input_from_tty && atty::is(Stream::Stdin) {
+            if !self.input_from_tty && std::io::stdin().is_terminal() {
                 let mut buf_writer = BufWriter::new(writer);
                 buf_writer
                     .write_all(EXMAPLES_MESSAGE.to_string().as_bytes())
