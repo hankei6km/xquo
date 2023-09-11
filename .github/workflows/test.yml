@@ -21,7 +21,7 @@ jobs:
             subcmd: test --quiet --target=x86_64-unknown-linux-musl --release --features=jemalloc
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # https://github.com/actions/cache/blob/main/examples.md#rust---cargo
       - name: Cache artifacts
@@ -57,7 +57,7 @@ jobs:
             expect: "'test'$'\\n'''"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # https://github.com/actions/cache/blob/main/examples.md#rust---cargo
       - name: Cache artifacts
