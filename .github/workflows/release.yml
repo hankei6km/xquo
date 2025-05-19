@@ -41,8 +41,8 @@ jobs:
       - name: Build inside Dev Container
         uses: devcontainers/ci@v0.3
         with:
-          imageName: ghcr.io/hankei6km/h6-dev-containers
-          imageTag: 2022-12-01-main-cli_rust
+          imageName: ghcr.io/hankei6km/test-dev-containers-images
+          imageTag: rust-cli__2025-05-19
           push: never
           subFolder: .devcontainer/cli
           runCmd: |
@@ -104,8 +104,8 @@ jobs:
       - name: Publish
         uses: devcontainers/ci@v0.3
         with:
-          imageName: ghcr.io/hankei6km/h6-dev-containers
-          imageTag: 2022-12-01-main-cli_rust
+          imageName: ghcr.io/hankei6km/test-dev-containers-images
+          imageTag: rust-cli__2025-05-19
           push: never
           subFolder: .devcontainer/cli
           runCmd: |
