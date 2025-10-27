@@ -29,7 +29,7 @@ clap = { version = "4.5", features = ["derive"] }
 anyhow = "1.0"
 crossbeam-channel = "0.5"
 tikv-jemallocator = { version = "0.6", optional = true }
-is-terminal = "0.4.16"
+is-terminal = "0.4.17"
 
 [dev-dependencies]
 assert_cmd = "2.0"
