@@ -32,5 +32,5 @@ tikv-jemallocator = { version = "0.6", optional = true }
 is-terminal = "0.4.17"
 
 [dev-dependencies]
-assert_cmd = "2.0"
+assert_cmd = "2.1"
 predicates = "3.1"
