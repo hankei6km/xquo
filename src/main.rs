@@ -68,6 +68,8 @@ struct Cli {
     /// Input from tty.
     #[clap(short = 't', long)]
     input_from_tty: bool,
+
+    input_file: Option<String>,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -82,6 +84,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         bulk_lines: args.bulk_lines,
         input_from_tty: args.input_from_tty,
     });
+    if let Some(input_file) = args.input_file {
+        xquo.quote(std::fs::File::open(input_file)?, std::io::stdout())?;
+        return Ok(());
+    }
     xquo.quote(std::io::stdin(), std::io::stdout())?;
 
     Ok(())
